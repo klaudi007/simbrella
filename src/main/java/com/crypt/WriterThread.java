@@ -36,12 +36,17 @@ public class WriterThread implements Runnable {
 
         try {
 
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(1);
 
                 while(true){
 
                     while(LIFO.isCompleted()){
                         String result = LIFO.pop();
+
+                        if(result == null){
+                            System.out.println("I must stop");
+                            return; // poison pill
+                        }
 
                         StringBuilder stringBuilder = new StringBuilder(Thread.currentThread().getName());
                         stringBuilder.append(TAB_SYMBOL)
@@ -52,10 +57,7 @@ public class WriterThread implements Runnable {
                         ReaderWriterTool.writeOne(stringBuilder.toString());
 
 //                            .append("the number of elements read by the thread");
-                        if(result.equals("Item 0")){
-                            System.out.println("I must stop");
-                            return; // poison pill
-                        }
+
                     }
 
 

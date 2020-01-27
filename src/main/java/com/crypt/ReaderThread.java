@@ -34,7 +34,7 @@ public class ReaderThread implements Runnable {
     @Override
     public void run() {
         try {
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(2);
 
             List<String> inputData = ReaderWriterTool.read(ReaderWriterTool.inputFilePath);
 

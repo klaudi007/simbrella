@@ -23,7 +23,7 @@ public class ReaderWriterTool {
                 line = bufferedReader.readLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // in case of file not exist first time "output.txt" it will throw appropriate exception
         }
         return input;
     }

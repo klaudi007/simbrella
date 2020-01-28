@@ -41,22 +41,31 @@ public class WriterThread implements Runnable {
                 while(true){
 
                     while(LIFO.isCompleted()){
-                        String result = LIFO.pop();
 
-                        if(result == null){
-                            System.out.println("I must stop");
-                            return; // poison pill
-                        }
 
-                        StringBuilder stringBuilder = new StringBuilder(Thread.currentThread().getName());
-                        stringBuilder.append(TAB_SYMBOL)
-                                .append(System.currentTimeMillis())
-                                .append(TAB_SYMBOL)
-                                .append(result);
+                        for(int i=0; i<6;i++){
 
-                        ReaderWriterTool.writeOne(stringBuilder.toString());
+                            String result = LIFO.pop();
+
+                            if(result == null){
+                                System.out.println("I must stop");
+                                return; // poison pill
+                            }
+
+                            StringBuilder stringBuilder = new StringBuilder(Thread.currentThread().getName());
+                            stringBuilder.append(TAB_SYMBOL)
+                                    .append(System.currentTimeMillis())
+                                    .append(TAB_SYMBOL)
+                                    .append(result);
+
+                            ReaderWriterTool.writeOne(stringBuilder.toString());
 
 //                            .append("the number of elements read by the thread");
+
+
+                        }
+
+                        Thread.yield();
 
                     }
 

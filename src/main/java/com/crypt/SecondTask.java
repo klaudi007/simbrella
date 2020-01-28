@@ -23,14 +23,20 @@ public class SecondTask {
 
 
 
-        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
-
-        Runnable worker = new WriterThread(LIFO);
-        executorService.execute(worker);
-
-        executorService.shutdown();
-        while (!executorService.isTerminated()) {
+        for(int i=0; i < THREAD_COUNT; i++){
+            Runnable worker = new WriterThread(LIFO);
+            new Thread(worker).start();
         }
+
+
+//        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+//
+//        Runnable worker = new WriterThread(LIFO);
+//        executorService.execute(worker);
+//
+//        executorService.shutdown();
+//        while (!executorService.isTerminated()) {
+//        }
 
 
 //        System.out.println("Finished all threads");

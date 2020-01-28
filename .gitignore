@@ -1,0 +1,11 @@
+# Build Artifacts
+build/
+target/
+bin/
+
+# IntelliJ IDEA Files
+
+*.iml
+*.ipr
+*.iws
+*.idea

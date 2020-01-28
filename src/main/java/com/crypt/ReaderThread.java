@@ -45,6 +45,7 @@ public class ReaderThread implements Runnable {
 //                System.out.println(input+" inserted to LIFO");
 //                TimeUnit.SECONDS.sleep(1);
             }
+
             LIFO.setCompleted();
             System.out.println("Reader "+Thread.currentThread().getName()+" finished.");
         } catch (InterruptedException e) {

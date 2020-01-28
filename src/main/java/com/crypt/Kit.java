@@ -1,35 +1,55 @@
 package com.crypt;
 
 
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Kit {
 
-    private static final String cryptedArr[] = {"QPZJ", "QLZJ", "QPJJJ", "QPFG", "QPZJ", "QPZJ"};
-
-    private static final String mostWanted = "BAKU";
+    private static final String mostWanted = "THE";
 
     private static final char downRange = 'A', upperRange = 'Z';
 
-    public static int findResult(String[] cryptedArr, String wanted){
-
-        int key = 0;
-
-        for(int i = 0; i < cryptedArr.length; i++){
-            if(matches(mostWanted, cryptedArr[i])){
-                System.out.println(" Text : "+mostWanted+",  matches with : "+cryptedArr[i]);
-                key = findKey(mostWanted, cryptedArr[0]);
-            }else{
-                System.out.println(" Text : "+mostWanted+", does not matches with : "+cryptedArr[i]);
-            }
-        }
-
-        return key;
-    }
 
     public static void main(String[] args){
 
-        int key = findResult(cryptedArr, mostWanted);
 
-        System.out.println("Symetric cript key is "+key);
+
+        try(BufferedReader br = new BufferedReader(new FileReader("encdata.txt"));
+            BufferedWriter bw = new BufferedWriter(new FileWriter("decoded.txt"))) {
+
+
+            List<String> str = br.lines().flatMap(s -> Arrays.stream(s.split("\\s+")).map(String::toUpperCase)).collect(Collectors.toList());
+
+            System.out.println("*********** START  *****************");
+
+//            for (String encrypted : str) {
+
+            for(int i = 0; i < 50; i++){
+
+                String encrypted = str.get(i);
+
+                if(matches(mostWanted, encrypted)){
+
+                    System.out.printf("Wanted %s matches with encrypted %s%n", mostWanted, encrypted);
+
+                    int key = findKey(mostWanted, encrypted);
+                    if(key!=0){
+                        System.out.printf("Key found %d%n", key);
+                        break;
+                    }
+                }
+            }
+
+            System.out.println("*********** END  *****************");
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -38,27 +58,29 @@ public class Kit {
      * method designed to test if requested word and existing word are matches for future process
      *
      * @param wanted
-     * @param crypted
+     * @param encrypted
      * @return true or false depending on result
      */
-    public static boolean matches(String wanted, String crypted){
+    public static boolean matches(String wanted, String encrypted){
 
-        if(wanted==null || crypted == null || wanted.length()!=crypted.length()) return false;
+        if(wanted==null || encrypted == null || wanted.length()!=encrypted.length()) return false;
 
         char[] wantedChArr = wanted.toCharArray();
-        char[] cryptedChArr  = crypted.toCharArray();
+        char[] encryptedChArr  = encrypted.toCharArray();
+
+        System.out.printf("Wanted %s, Encrypted %s%n", wanted, encrypted);
 
         for(int i = 0; i < wantedChArr.length-1; i++){
 
             int firstDiff = wantedChArr[i+1] - wantedChArr[i];
 
-            if((firstDiff + cryptedChArr[i]) > upperRange){   // in case of next ascii is bigger than upperBound
+            if((firstDiff + encryptedChArr[i]) > upperRange){   // in case of next ascii is bigger than upperBound
 
-                if((firstDiff + cryptedChArr[i]) != cryptedChArr[i+1] + 26){
+                if((firstDiff + encryptedChArr[i]) != encryptedChArr[i+1] + 26){
                     return false;
                 }
             }
-            else if((wantedChArr[i+1] - wantedChArr[i]) != (cryptedChArr[i+1] - cryptedChArr[i])){
+            else if((wantedChArr[i+1] - wantedChArr[i]) != (encryptedChArr[i+1] - encryptedChArr[i])){
                 return false;
             }
         }

@@ -43,7 +43,7 @@ public class Worker {
 
                         if (stack.isEmpty()) break;
                         String str = stack.pop();
-                        String line = String.format("%s\t%s\t%s\t%s\n", Thread.currentThread().getName(), System.currentTimeMillis(), str, i);
+                        String line = String.format("%s\t%s\t%s\t%s\t%n", Thread.currentThread().getName(), System.currentTimeMillis(), str, i);
                         sb.append(line);
                         System.out.println("line -> " + line);
 

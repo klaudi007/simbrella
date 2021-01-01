@@ -8,14 +8,11 @@ import java.util.stream.Collectors;
 
 public class Kit {
 
-    private static final String mostWanted = "THE";
+    private static final String mostWanted = "AND";
 
     private static final char downRange = 'A', upperRange = 'Z';
 
-
     public static void main(String[] args){
-
-
 
         try(BufferedReader br = new BufferedReader(new FileReader("encdata.txt"));
             BufferedWriter bw = new BufferedWriter(new FileWriter("decoded.txt"))) {
@@ -25,23 +22,40 @@ public class Kit {
 
             System.out.println("*********** START  *****************");
 
-//            for (String encrypted : str) {
+            int key = 0;
 
-            for(int i = 0; i < 50; i++){
+            for (String encrypted : str) {
 
-                String encrypted = str.get(i);
 
                 if(matches(mostWanted, encrypted)){
 
                     System.out.printf("Wanted %s matches with encrypted %s%n", mostWanted, encrypted);
 
-                    int key = findKey(mostWanted, encrypted);
+                        key = findKey(mostWanted, encrypted);
                     if(key!=0){
                         System.out.printf("Key found %d%n", key);
                         break;
+                    }else{
+                        System.out.printf("%s", "Text is not encrypted!");
                     }
                 }
             }
+
+
+            if (key != 0) {  // data really encrypted and key found
+
+                StringBuilder builder = new StringBuilder();
+
+                for (String encrypted : str) {
+
+                    builder.append(decrypt(encrypted, key)).append(" ");
+
+                }
+
+                bw.write(builder.toString());
+
+            }
+
 
             System.out.println("*********** END  *****************");
 
@@ -51,7 +65,6 @@ public class Kit {
         }
 
     }
-
 
     /**
      *
@@ -75,38 +88,35 @@ public class Kit {
             int firstDiff = wantedChArr[i+1] - wantedChArr[i];
 
             if((firstDiff + encryptedChArr[i]) > upperRange){   // in case of next ascii is bigger than upperBound
-
-                if((firstDiff + encryptedChArr[i]) != encryptedChArr[i+1] + 26){
+                if((firstDiff + encryptedChArr[i]) == encryptedChArr[i+1] + 26){
+                    return true;
+                }else{
                     return false;
                 }
             }
-            else if((wantedChArr[i+1] - wantedChArr[i]) != (encryptedChArr[i+1] - encryptedChArr[i])){
-                return false;
+            else if(firstDiff == (encryptedChArr[i+1] - encryptedChArr[i])){
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     /**
      * method designed for to find encryption key on match cases
      * @param required
-     * @param crypted
+     * @param encrypted
      * @return encryption key
      */
-    public static int findKey(String required, String crypted){
+    public static int findKey(String required, String encrypted){
 
         char[] requiredArr = required.toCharArray();
-        char[] cryptedArr  = crypted.toCharArray();
+        char[] encryptedArr  = encrypted.toCharArray();
 
-        int key = keyFinder(requiredArr[0], cryptedArr[0]);
-
-        // r + k > 90(Z) ? c = (r+k)%26 : c = r + k
-
-//        System.out.println("E 0 "+key);
+        int key = keyFinder(requiredArr[0], encryptedArr[0]);
 
         for(int i=1; i < required.length(); i++){
-//            System.out.println("E "+i+" "+keyFinder(requiredArr[i], cryptedArr[i]));
-            if(key != keyFinder(requiredArr[i], cryptedArr[i])){
+
+            if(key != keyFinder(requiredArr[i], encryptedArr[i])){
                 return 0;
             }
 
@@ -118,32 +128,34 @@ public class Kit {
     /**
      * main part where defines key
      * @param original
-     * @param crypted
+     * @param encrypted
      * @return
      */
-    public static int keyFinder(int original, int crypted){
+    public static int keyFinder(int original, int encrypted){
+        // r + k > 90(Z) ? c = (r+k)%26 : c = r + k
         int key;
-        if(original > crypted)
-            key = crypted + 26 - original;
+        // E(x) = (x+n)%26; // mode is not inversible operator
+        //(encrypted - 65) = (original-65 + key) % 26;
+        //65 < x < 90
+        if(original > encrypted)
+            key = encrypted + 26 - original;
         else
-            key = crypted - original;
+            key = encrypted - original;
 
         if(key+original < downRange){
             key=-key; // backward case
         }else if(key+original > upperRange){
-            //forward case
+            //forward case... e.i. normal case
         }
         return key;
     }
 
-
-    public static int indexOf(String[] arr, String e){
-        for(int i=0; i < arr.length; i++){
-            if(arr[i].equals(e)){
-                return i;
-            }
+    public static String decrypt(String encrypted, int key){
+        char[] arr = encrypted.toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] += key;
+            arr[i] = (arr[i] < downRange) ? (char) (arr[i] + 26) : ((arr[i] > upperRange) ? (char) (arr[i] - 26) : arr[i]);
         }
-        return -1;
+        return new String(arr);
     }
-
 }
